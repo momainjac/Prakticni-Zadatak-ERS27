@@ -4,9 +4,7 @@ using Shared;
 
 namespace Database.Repositories;
 
-// TODO: implementirati trajno cuvanje u JSON datoteci.
-// Nacrtati/odabrati nacin serijalizacije polimorfnih modela konkretnog zadatka.
-public sealed class JsonZapisiRepozitorijum : IZapisiRepozitorijum
+public sealed class JsonZapisiRepozitorijum : ICitanjeZapisa, IUpisZapisa
 {
     private readonly string _putanja;
 
@@ -16,14 +14,17 @@ public sealed class JsonZapisiRepozitorijum : IZapisiRepozitorijum
     }
 
     public Result Sacuvaj(Zapis zapis) =>
-        Result.Failure("repo.nije_implementirano", "Implementirati JSON upis.");
+        Result.Failure("repo.nije_implementirano", "Чување у JSON-у није реализовано.");
 
     public Result<Zapis> Pronadji(Guid id) =>
-        Result<Zapis>.Failure("repo.nije_implementirano", "Implementirati JSON citanje.");
+        Result<Zapis>.Failure("repo.nije_implementirano", "Претрага у JSON-у није реализована.");
 
     public Result<IReadOnlyList<Zapis>> Svi() =>
-        Result<IReadOnlyList<Zapis>>.Failure("repo.nije_implementirano", "Implementirati pregled JSON zapisa.");
+        Result<IReadOnlyList<Zapis>>.Failure("repo.nije_implementirano", "Преглед JSON-а записа није реализован.");
+
+    public Result<IReadOnlyList<Zapis>> PretraziPoPolaznoj(string polaznaStanica) =>
+        Result<IReadOnlyList<Zapis>>.Failure("repo.nije_implementirano", "Претрага у JSON-у није реализована.");
 
     public Result Obrisi(Guid id) =>
-        Result.Failure("repo.nije_implementirano", "Implementirati JSON brisanje.");
+        Result.Failure("repo.nije_implementirano", "Брисање у JSON-а није реализовано.");
 }

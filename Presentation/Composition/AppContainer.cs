@@ -8,26 +8,40 @@ using Presentation.Interfaces;
 
 namespace Presentation.Composition;
 
+
 // Sastavljanje zavisnosti na jednom mestu; Domain/Application ne biraju adaptere.
 public sealed class AppContainer
 {
     public required IConsoleIO Io { get; init; }
-    public required IZapisiRepozitorijum Repozitorijum { get; init; }
+    public required ICitanjeZapisa Citanje { get; init; }
+    public required IUpisZapisa Upis { get; init; }
     public required ILoggerServis Logger { get; init; }
     public required ZapisServis Servis { get; init; }
 
     public static AppContainer Create(string rezim)
     {
-        IZapisiRepozitorijum repo = rezim.Equals("json", StringComparison.OrdinalIgnoreCase)
-            ? new JsonZapisiRepozitorijum("podaci.json")
-            : new InMemoryZapisiRepozitorijum();
-        ILoggerServis logger = new FileLoggerServis();
-        return new AppContainer
+        ICitanjeZapisa citanje;
+        IUpisZapisa upis;
+        if (rezim.Equals("json", StringComparison.OrdinalIgnoreCase))
         {
+            var json = new JsonZapisiRepozitorijum("podaci.json");
+            citanje = json;
+            upis = json;
+        }
+        else
+        {
+            var mem = new InMemoryZapisiRepozitorijum();
+            citanje = mem;
+            upis = mem;
+        }
+
+        ILoggerServis logger = new FileLoggerServis();
+        return new AppContainer{
             Io = new SystemConsoleIO(),
-            Repozitorijum = repo,
+            Citanje = citanje,
+            Upis = upis,
             Logger = logger,
-            Servis = new ZapisServis(repo, logger)
+            Servis = new ZapisServis(citanje, upis, logger)
         };
     }
 }
