@@ -58,7 +58,48 @@ public sealed class ZapisServis
         return Result<Guid>.Success(ruta.Id);
     }
 
+    public Result<Guid> DodajMedjugradsku(string naziv, string opis, string polaznaStanica, string oznakaLinije, double razdaljina, double trajanje)
+    {
+        if (string.IsNullOrWhiteSpace(naziv) || string.IsNullOrWhiteSpace(opis))
+            return Result<Guid>.Failure("naziv.obavezan", "Назив и опис су обавезни!");
+        if (string.IsNullOrWhiteSpace(polaznaStanica))
+            return Result<Guid>.Failure("polazna.obavezna", "Полазнa станица је обавезна!");
+        if (string.IsNullOrWhiteSpace(oznakaLinije))
+            return Result<Guid>.Failure("oznaka.obavezna", "Ознака међуградске линије је обавезна.");
+
+        if (razdaljina <= 0)
+            return Result<Guid>.Failure("razdaljina.pozitivna", "Раздаљина мора бити позитивна. ");
+        if (trajanje <= 0)
+            return Result<Guid>.Failure("trajanje.pozitivno", "Трајање мора бити позитивно.");
+
+        var ruta = new MedjugradskaRuta
+        {
+            Id = Guid.NewGuid(),
+            Naziv = naziv.Trim(),
+            Opis = opis.Trim(),
+            PolaznaStanica = polaznaStanica.Trim(),
+            OznakaLinije = oznakaLinije.Trim(),
+            Razdaljina = razdaljina,
+            Trajanje = trajanje,
+            KreiranoUtc = DateTimeOffset.UtcNow,
+            Status = StatusRute.Kreirana,
+            Stanice = new List<string> { polaznaStanica.Trim(), polaznaStanica.Trim() + " - одредиште" }
+        };
+
+        var rez = _upis.Sacuvaj(ruta);
+
+        if (rez.IsFailure)
+        {
+            _logger.Loguj($"Додавање међуградске руте није успело: {rez.Error!.Message}");
+            return Result<Guid>.Failure(rez.Error.Code, rez.Error.Message);
+        }
+        _logger.Loguj($"Додата међуградска рута {ruta.Id}");
+        return Result<Guid>.Success(ruta.Id);
+    }
+
     public Result<IReadOnlyList<Zapis>> Svi() => _citanje.Svi();
+
+    public Result<IReadOnlyList<Zapis>> PretraziPoPolaznoj(string polazna) => _citanje.PretraziPoPolaznoj(polazna);
 
     public Result Aktiviraj(Guid id)
     {
@@ -71,6 +112,21 @@ public sealed class ZapisServis
         var sacuvaj = _upis.Sacuvaj(zapis);
         if (sacuvaj.IsFailure) return sacuvaj;
         _logger.Loguj($"Активирана рута {id}");
+        return Result.Success();
+    }
+
+    public Result Deaktiviraj(Guid id)
+    {
+        var pronadji = _citanje.Pronadji(id);
+        if (pronadji.IsFailure) return Result.Failure(pronadji.Error!.Code, pronadji.Error!.Message);
+        var zapis = pronadji.Value!;
+        if (zapis.Status != StatusRute.Aktivna) return Result.Failure("deaktivacija.nije_aktivna", "Рута није активна.");
+        if (zapis.ImaZapocetuVoznju) return Result.Failure("deaktivacija.zapoceta_voznja", "Деактивација није дозвољена док постоји започета вожња.");
+
+        zapis.Status = StatusRute.Neaktivna;
+        var sacuvaj = _upis.Sacuvaj(zapis);
+        if (sacuvaj.IsFailure) return sacuvaj;
+        _logger.Loguj($"Деактивирана рута {id}");
         return Result.Success();
     }
 }

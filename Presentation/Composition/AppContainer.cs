@@ -8,8 +8,6 @@ using Presentation.Interfaces;
 
 namespace Presentation.Composition;
 
-
-// Sastavljanje zavisnosti na jednom mestu; Domain/Application ne biraju adaptere.
 public sealed class AppContainer
 {
     public required IConsoleIO Io { get; init; }
@@ -18,7 +16,7 @@ public sealed class AppContainer
     public required ILoggerServis Logger { get; init; }
     public required ZapisServis Servis { get; init; }
 
-    public static AppContainer Create(string rezim)
+    public static AppContainer Create(string rezim, string loggerTip = "file")
     {
         ICitanjeZapisa citanje;
         IUpisZapisa upis;
@@ -35,8 +33,12 @@ public sealed class AppContainer
             upis = mem;
         }
 
-        ILoggerServis logger = new FileLoggerServis();
-        return new AppContainer{
+        ILoggerServis logger = loggerTip.Equals("console", StringComparison.OrdinalIgnoreCase)
+            ? new ConsoleLoggerServis()
+            : new FileLoggerServis();
+
+        return new AppContainer
+        {
             Io = new SystemConsoleIO(),
             Citanje = citanje,
             Upis = upis,
@@ -44,4 +46,6 @@ public sealed class AppContainer
             Servis = new ZapisServis(citanje, upis, logger)
         };
     }
+
+    public static AppContainer Create(string rezim) => Create(rezim, "file");
 }
