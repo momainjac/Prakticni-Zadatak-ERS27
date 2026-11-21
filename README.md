@@ -11,7 +11,6 @@ dotnet restore
 dotnet build
 dotnet test
 dotnet run --project Presentation -- in-memory
-# после имплементације JSON репозиторијума
 dotnet run --project Presentation -- json
 ```
 
@@ -38,9 +37,9 @@ dotnet run --project Presentation -- json
 
 ## Студентски подаци
 
-- Број и назив задатка: _____________________________
-- Јавни GitHub репозиторијум: _______________________
-- Pull Request 1: __________________________________
-- Pull Request 2: __________________________________
+- Број и назив задатка: ПРАКТИЧНИ ЗАДАТАК 085 - Планирање путних рута
+- Јавни GitHub репозиторијум: https://github.com/momainjac/Prakticni-Zadatak-ERS27
+- Pull Request 1: https://github.com/momainjac/Prakticni-Zadatak-ERS27/pull/1
+- Pull Request 2: https://github.com/momainjac/Prakticni-Zadatak-ERS27/pull/2
 
 README допунити упутством за покретање и тестирање, избором режима чувања и везама ка спојеним захтевима за спајање.
