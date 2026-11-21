@@ -9,3 +9,10 @@ TestResults/
 *.log
 *.db
 *.json.tmp
+
+log.txt
+**/log.txt
+podaci.json
+**/podaci.json
+podaci.json.tmp
+**/podaci.json.tmp

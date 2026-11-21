@@ -18,7 +18,7 @@
 
 ## LSP — заменљивост имплементација
     Уговор: ICitanjeZapisa i IUpisZapisa
-    Имплементације: InMemoryZapisiRepozitorijum и stub JsonZapisiRepozitorijum
+    Имплементације: InMemoryZapisiRepozitorijum и JsonZapisiRepozitorijum
 
 ## ISP — раздвајање интерфејса
     Раздвојеност: ICitanjeZapisa и IUpisZapisa
@@ -31,3 +31,4 @@
 ## Clean Architecture — смер зависности
     Presentation -> Application -> Domain
     Database -> Application & Domain
+    Infrastructure -> Application
